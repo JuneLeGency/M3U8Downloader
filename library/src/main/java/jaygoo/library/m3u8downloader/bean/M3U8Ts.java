@@ -1,6 +1,7 @@
 package jaygoo.library.m3u8downloader.bean;
 
 import android.support.annotation.NonNull;
+import jaygoo.library.m3u8downloader.utils.MD5Utils;
 
 /**
  * m3u8切片类
@@ -8,22 +9,37 @@ import android.support.annotation.NonNull;
  */
 
 public class M3U8Ts implements Comparable<M3U8Ts> {
-    private String file;
+    private String url;
     private long fileSize;
     private float seconds;
 
-    public M3U8Ts(String file, float seconds) {
-        this.file = file;
+    public M3U8Ts(String url, float seconds) {
+        this.url = url;
         this.seconds = seconds;
     }
+    public String getUrl() {
+        return url;
+    }
+
+    public String obtainFullUrl(String host) {
+        if (url == null) {
+            return null;
+        }
+        if (url.startsWith("//")) {
+            return "http:".concat(url);
+        }
+        if (url.startsWith("/")) {
+            return host.concat(url);
+        } else {
+            return url;
+        }
+    }
+
 
     public String getFile() {
-        return file;
+        return MD5Utils.encode(url).concat(".ts");
     }
 
-    public void setFile(String file) {
-        this.file = file;
-    }
 
     public float getSeconds() {
         return seconds;
@@ -35,7 +51,7 @@ public class M3U8Ts implements Comparable<M3U8Ts> {
 
     @Override
     public String toString() {
-        return file + " (" + seconds + "sec)";
+        return url + " (" + seconds + "sec)";
     }
 
     /**
@@ -43,7 +59,7 @@ public class M3U8Ts implements Comparable<M3U8Ts> {
      */
     public long getLongDate() {
         try {
-            return Long.parseLong(file.substring(0, file.lastIndexOf(".")));
+            return Long.parseLong(url.substring(0, url.lastIndexOf(".")));
         }catch (NumberFormatException e){
             return 0;
         }
@@ -51,7 +67,7 @@ public class M3U8Ts implements Comparable<M3U8Ts> {
 
     @Override
     public int compareTo(@NonNull M3U8Ts o) {
-        return file.compareTo(o.file);
+        return url.compareTo(o.url);
     }
 
     public long getFileSize() {

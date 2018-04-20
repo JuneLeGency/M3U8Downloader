@@ -16,6 +16,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import android.util.Log;
 import jaygoo.library.m3u8downloader.bean.M3U8;
 import jaygoo.library.m3u8downloader.bean.M3U8Ts;
 import jaygoo.library.m3u8downloader.utils.M3U8Log;
@@ -252,6 +253,7 @@ class M3U8DownloadTask {
                 public void run() {
 
                     File file;
+                    String urlString;
                     try {
                         String fileName = M3U8EncryptHelper.encryptFileName(encryptKey,m3U8Ts.getFile());
                         file = new File(dir + File.separator + fileName);
@@ -264,7 +266,9 @@ class M3U8DownloadTask {
                         FileOutputStream fos = null;
                         InputStream inputStream = null;
                         try {
-                            URL url = new URL(basePath + m3U8Ts.getFile());
+                            urlString = m3U8Ts.obtainFullUrl(basePath);
+                            M3U8Log.d("start download "+urlString);
+                            URL url = new URL(urlString);
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                             conn.setConnectTimeout(connTimeout);
                             conn.setReadTimeout(readTimeout);
